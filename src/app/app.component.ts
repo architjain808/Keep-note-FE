@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Note } from './models/note.model';
 import { NotesService } from './services/notes.service';
+import { AppInitService } from './app-init.service';
 
 @Component({
   selector: 'app-root',
@@ -12,7 +13,10 @@ export class AppComponent implements OnInit {
   title = 'Keep Clone';
   notes$!: Observable<Note[]>;
 
-  constructor(private readonly notesService: NotesService) {}
+  constructor(
+    private readonly notesService: NotesService,
+    private readonly appInitService: AppInitService
+  ) {}
 
   ngOnInit(): void {
     this.notes$ = this.notesService.getNotes();

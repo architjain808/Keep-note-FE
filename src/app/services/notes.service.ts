@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, catchError, of } from 'rxjs';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { BehaviorSubject, Observable, catchError, of, timeout, retry } from 'rxjs';
 import { Note, ApiNote, CreateNoteRequest, UpdateNoteRequest, DeleteNoteRequest } from '../models/note.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class NotesService {
-  private readonly API_BASE_URL = 'https://keep-clone-be.onrender.com';
+  private readonly API_BASE_URL = environment.apiUrl;
   private readonly notesSubject = new BehaviorSubject<Note[]>([]);
   public readonly notes$ = this.notesSubject.asObservable();
 
@@ -19,15 +20,22 @@ export class NotesService {
   private loadNotesFromAPI(): void {
     this.http.get<ApiNote[]>(`${this.API_BASE_URL}/notes`)
       .pipe(
-        catchError(error => {
-          console.error('Error loading notes:', error);
+        timeout(10000), // 10 second timeout
+        retry(2), // Retry up to 2 times
+        catchError((error: HttpErrorResponse) => {
+          this.logError('Error loading notes', error);
           // Return empty array on error, but don't break the app
           return of([]);
         })
       )
-      .subscribe(apiNotes => {
-        const notes = this.convertApiNotesToNotes(apiNotes);
-        this.notesSubject.next(notes);
+      .subscribe({
+        next: (apiNotes) => {
+          const notes = this.convertApiNotesToNotes(apiNotes);
+          this.notesSubject.next(notes);
+        },
+        error: (error) => {
+          this.logError('Subscription error loading notes', error);
+        }
       });
   }
 
@@ -200,5 +208,24 @@ export class NotesService {
 
   private generateTempId(): string {
     return 'temp_' + Date.now().toString() + Math.random().toString(36).substring(2, 11);
+  }
+
+  private logError(message: string, error: any): void {
+    if (environment.enableDebugMode) {
+      console.error(message, error);
+
+      // Additional error details for debugging
+      if (error instanceof HttpErrorResponse) {
+        console.error('HTTP Error Details:', {
+          status: error.status,
+          statusText: error.statusText,
+          url: error.url,
+          message: error.message
+        });
+      }
+    } else {
+      // In production, log minimal error info
+      console.error(message, error?.message ?? 'Unknown error');
+    }
   }
 }

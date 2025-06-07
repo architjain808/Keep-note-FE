@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, ErrorHandler } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -24,6 +24,7 @@ import { NoteCardComponent } from './components/note-card/note-card.component';
 import { NoteFormComponent } from './components/note-form/note-form.component';
 import { ColorPickerComponent } from './components/color-picker/color-picker.component';
 import { RichTextEditorComponent } from './components/rich-text-editor/rich-text-editor.component';
+import { GlobalErrorHandler } from './services/global-error-handler.service';
 
 @NgModule({
   declarations: [
@@ -51,7 +52,12 @@ import { RichTextEditorComponent } from './components/rich-text-editor/rich-text
     MatDialogModule,
     MatSnackBarModule
   ],
-  providers: [],
+  providers: [
+    {
+      provide: ErrorHandler,
+      useClass: GlobalErrorHandler
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
