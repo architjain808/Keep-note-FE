@@ -1,0 +1,46 @@
+.color-palette {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  padding: 12px;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.color-option {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  position: relative;
+
+  &:hover {
+    transform: scale(1.1);
+    border-color: rgba(0, 0, 0, 0.2);
+  }
+
+  &.selected {
+    border-color: #4f46e5;
+    transform: scale(1.1);
+
+    &::after {
+      content: '✓';
+      position: absolute;
+      color: #4f46e5;
+      font-size: 14px;
+      font-weight: bold;
+      text-shadow: 0 0 3px rgba(255, 255, 255, 0.8);
+    }
+  }
+
+  .check-icon {
+    display: none;
+  }
+}

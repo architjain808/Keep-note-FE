@@ -1,0 +1,66 @@
+<div class="rich-text-editor-container">
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <button type="button"
+            class="toolbar-btn"
+            (click)="execCommand('bold')"
+            [class.active]="isCommandActive('bold')"
+            title="Bold">
+      <mat-icon>format_bold</mat-icon>
+    </button>
+
+    <button type="button"
+            class="toolbar-btn"
+            (click)="execCommand('italic')"
+            [class.active]="isCommandActive('italic')"
+            title="Italic">
+      <mat-icon>format_italic</mat-icon>
+    </button>
+
+    <button type="button"
+            class="toolbar-btn"
+            (click)="execCommand('underline')"
+            [class.active]="isCommandActive('underline')"
+            title="Underline">
+      <mat-icon>format_underlined</mat-icon>
+    </button>
+
+    <div class="toolbar-separator"></div>
+
+    <button type="button"
+            class="toolbar-btn"
+            (click)="execCommand('insertUnorderedList')"
+            [class.active]="isCommandActive('insertUnorderedList')"
+            title="Bullet List">
+      <mat-icon>format_list_bulleted</mat-icon>
+    </button>
+
+    <button type="button"
+            class="toolbar-btn"
+            (click)="execCommand('insertOrderedList')"
+            [class.active]="isCommandActive('insertOrderedList')"
+            title="Numbered List">
+      <mat-icon>format_list_numbered</mat-icon>
+    </button>
+
+    <div class="toolbar-separator"></div>
+
+    <button type="button"
+            class="toolbar-btn"
+            (click)="execCommand('formatBlock', 'h3')"
+            title="Heading">
+      <mat-icon>title</mat-icon>
+    </button>
+  </div>
+
+  <!-- Editor -->
+  <div class="editor-content"
+       contenteditable="true"
+       [style.min-height]="minHeight"
+       [attr.data-placeholder]="placeholder"
+       (input)="onContentChange($event)"
+       (blur)="onBlur()"
+       (focus)="onFocus()"
+       #editor>
+  </div>
+</div>

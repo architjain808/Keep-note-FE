@@ -1,0 +1,40 @@
+<!-- Google Keep Clone Header -->
+<mat-toolbar class="header">
+  <button mat-icon-button class="menu-button">
+    <mat-icon>menu</mat-icon>
+  </button>
+
+  <div class="logo-section">
+    <mat-icon class="keep-icon">lightbulb_outline</mat-icon>
+    <span class="app-title">{{ title }}</span>
+  </div>
+</mat-toolbar>
+
+<!-- Main Content Area -->
+<main class="main-content">
+  <!-- Note Form Section -->
+  <div class="note-form-section">
+    <app-note-form (noteSubmit)="onNoteSubmit($event)"></app-note-form>
+  </div>
+
+  <!-- Notes Grid Section -->
+  <div class="notes-section">
+    <div class="notes-grid" *ngIf="notes$ | async as notes">
+      <app-note-card
+        *ngFor="let note of notes; trackBy: trackByNoteId"
+        [note]="note"
+        (noteUpdate)="onNoteUpdate($event)"
+        (noteDelete)="onNoteDelete($event)"
+        (colorChange)="onColorChange($event)">
+      </app-note-card>
+    </div>
+    
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="(notes$ | async)?.length === 0">
+      <mat-icon class="empty-icon">lightbulb_outline</mat-icon>
+      <p class="empty-message">Notes you add appear here</p>
+    </div>
+  </div>
+</main>
+
+<router-outlet></router-outlet>

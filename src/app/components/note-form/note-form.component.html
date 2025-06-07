@@ -1,0 +1,64 @@
+<div class="note-form-container" [class.expanded]="isExpanded" [style.background-color]="color">
+  <form (ngSubmit)="onSubmit()" class="note-form">
+    <!-- Collapsed state -->
+    <div *ngIf="!isExpanded" class="collapsed-form" (click)="expandForm()">
+      <input
+        type="text"
+        placeholder="Take a note..."
+        class="collapsed-input"
+        readonly>
+      <div class="form-actions">
+        <button type="button" mat-icon-button>
+          <mat-icon>check_box</mat-icon>
+        </button>
+        <button type="button" mat-icon-button>
+          <mat-icon>brush</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- Expanded state -->
+    <div *ngIf="isExpanded" class="expanded-form">
+      <mat-form-field appearance="fill" class="title-field">
+        <input
+          matInput
+          placeholder="Title"
+          [(ngModel)]="title"
+          name="title"
+          class="title-input">
+      </mat-form-field>
+
+      <div class="content-field">
+        <app-rich-text-editor
+          [(ngModel)]="content"
+          name="content"
+          placeholder="Take a note..."
+          [minHeight]="'150px'"
+          (contentChange)="onContentChange($event)">
+        </app-rich-text-editor>
+      </div>
+
+      <div class="form-footer">
+        <div class="form-actions">
+          <button type="button" mat-icon-button [matMenuTriggerFor]="colorMenu">
+            <mat-icon>palette</mat-icon>
+          </button>
+          <mat-menu #colorMenu="matMenu">
+            <div mat-menu-item (click)="$event.stopPropagation()">
+              <app-color-picker
+                [currentColor]="color"
+                (colorSelected)="onColorSelected($event)"></app-color-picker>
+            </div>
+          </mat-menu>
+
+
+        </div>
+
+        <div class="submit-actions">
+          <button type="button" mat-button (click)="onSave()" color="primary">Save</button>
+          <button type="button" mat-button (click)="onCancel()">Close</button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,163 @@
+.note-card {
+  margin-bottom: 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: white;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  width: 100%;
+  break-inside: avoid;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+    .note-actions {
+      opacity: 1;
+    }
+  }
+
+  // When editing, make it 150% width
+  &.editing {
+    grid-column: 1 / -1;
+    width: 150%;
+    margin: 0 auto 16px;
+    transform: none;
+    z-index: 10;
+
+    &:hover {
+      transform: none;
+    }
+
+    // Responsive design
+    @media (max-width: 768px) {
+      width: 95%;
+    }
+  }
+}
+
+.note-view {
+  padding: 16px 20px;
+  min-height: auto;
+}
+
+.note-header {
+  margin-bottom: 8px;
+
+  .note-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #111827;
+    word-wrap: break-word;
+    line-height: 1.4;
+  }
+}
+
+.note-content {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #374151;
+  word-wrap: break-word;
+}
+
+.note-actions {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+
+  button {
+    color: #6b7280;
+
+    &:hover {
+      color: #4f46e5;
+      background: rgba(79, 70, 229, 0.1);
+    }
+  }
+}
+
+// Edit Mode Styles
+.note-edit {
+  padding: 32px 40px;
+
+  .edit-title {
+    width: 100%;
+    margin-bottom: 24px;
+
+    .mat-mdc-form-field-subscript-wrapper {
+      display: none;
+    }
+
+    .mat-mdc-text-field-wrapper {
+      background: white;
+      border-radius: 8px;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    input {
+      font-size: 20px;
+      font-weight: 600;
+      color: #111827;
+      padding: 12px 16px;
+    }
+  }
+
+  .edit-content {
+    margin-bottom: 24px;
+    width: 100%;
+
+    app-rich-text-editor {
+      width: 100%;
+      display: block;
+
+      .rich-text-editor-container {
+        min-height: 200px;
+
+        .editor-content {
+          min-height: 180px;
+          padding: 20px;
+          font-size: 16px;
+        }
+      }
+    }
+  }
+
+  .edit-actions {
+    display: flex;
+    gap: 16px;
+    justify-content: flex-end;
+    padding-top: 16px;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+
+    button {
+      font-size: 15px;
+      padding: 10px 24px;
+      border-radius: 8px;
+      font-weight: 500;
+
+      &:first-child {
+        background: #4f46e5;
+        color: white;
+
+        &:hover {
+          background: #4338ca;
+        }
+      }
+
+      &:last-child {
+        color: #6b7280;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+
+        &:hover {
+          background: rgba(0, 0, 0, 0.05);
+        }
+      }
+    }
+  }
+}
+

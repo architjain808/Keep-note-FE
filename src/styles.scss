@@ -1,0 +1,130 @@
+/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', 'Google Sans', Roboto, "Helvetica Neue", sans-serif;
+  background: #fafafa;
+  color: #111827;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+// Modern Material Design overrides
+.mat-mdc-form-field {
+  .mat-mdc-text-field-wrapper {
+    border-radius: 8px;
+    background: white;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+  }
+
+  .mat-mdc-form-field-focus-overlay {
+    border-radius: 8px;
+  }
+
+  &.mat-focused .mat-mdc-text-field-wrapper {
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+  }
+}
+
+.mat-mdc-card {
+  border-radius: 12px;
+  background: white;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.mat-mdc-button {
+  border-radius: 8px;
+  font-weight: 500;
+  text-transform: none;
+  padding: 8px 16px;
+  transition: all 0.2s ease;
+
+  &.mat-primary {
+    background: #4f46e5;
+    color: white;
+
+    &:hover {
+      background: #4338ca;
+    }
+  }
+}
+
+.mat-mdc-icon-button {
+  border-radius: 8px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(79, 70, 229, 0.1);
+  }
+}
+
+// Animation keyframes
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+// Utility classes
+.fade-in-up {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.pulse {
+  animation: pulse 2s infinite;
+}
+
+// Scrollbar styling
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(102, 126, 234, 0.3);
+  border-radius: 4px;
+
+  &:hover {
+    background: rgba(102, 126, 234, 0.5);
+  }
+}
+
+

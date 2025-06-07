@@ -1,0 +1,64 @@
+<mat-card class="note-card" [class.editing]="isEditing" [style.background-color]="note.color">
+  <!-- View Mode -->
+  <div *ngIf="!isEditing" class="note-view" (click)="startEdit()">
+    <div class="note-header">
+      <h3 class="note-title" *ngIf="note.title">{{ note.title }}</h3>
+    </div>
+
+    <div
+      class="note-content"
+      *ngIf="note.content"
+      [innerHTML]="note.content">
+    </div>
+
+    <div class="note-actions">
+      <button
+        mat-icon-button
+        [matMenuTriggerFor]="colorMenu"
+        (click)="$event.stopPropagation()"
+        matTooltip="Change color">
+        <mat-icon>palette</mat-icon>
+      </button>
+      <mat-menu #colorMenu="matMenu">
+        <div mat-menu-item (click)="$event.stopPropagation()">
+          <app-color-picker
+            [currentColor]="note.color"
+            (colorSelected)="onColorSelected($event)"></app-color-picker>
+        </div>
+      </mat-menu>
+
+      <button
+        mat-icon-button
+        (click)="$event.stopPropagation(); deleteNote()"
+        matTooltip="Delete note">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Edit Mode -->
+  <div *ngIf="isEditing" class="note-edit">
+    <mat-form-field appearance="fill" class="edit-title">
+      <input
+        matInput
+        placeholder="Title"
+        [(ngModel)]="editTitle"
+        (keydown.enter)="saveEdit()"
+        (keydown.escape)="cancelEdit()">
+    </mat-form-field>
+
+    <div class="edit-content">
+      <app-rich-text-editor
+        [(ngModel)]="editContent"
+        placeholder="Take a note..."
+        [minHeight]="'120px'"
+        (contentChange)="onEditContentChange($event)">
+      </app-rich-text-editor>
+    </div>
+
+    <div class="edit-actions">
+      <button mat-button (click)="saveEdit()">Save</button>
+      <button mat-button (click)="cancelEdit()">Cancel</button>
+    </div>
+  </div>
+</mat-card>

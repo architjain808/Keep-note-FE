@@ -1,0 +1,11 @@
+<div class="color-palette">
+  <div
+    *ngFor="let color of colors"
+    class="color-option"
+    [style.background-color]="color.value"
+    [class.selected]="currentColor === color.value"
+    (click)="selectColor(color.value)"
+    [title]="color.name">
+    <mat-icon *ngIf="currentColor === color.value" class="check-icon">check</mat-icon>
+  </div>
+</div>

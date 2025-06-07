@@ -1,0 +1,240 @@
+.note-form-container {
+  width: 150%;
+  margin: 0 auto 24px;
+  border-radius: 12px;
+  background: white;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  position: relative;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  &:focus-within {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-color: rgba(79, 70, 229, 0.3);
+  }
+
+  // When expanded, keep same width
+  &.expanded {
+    width: 150%;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  // Responsive design
+  @media (max-width: 768px) {
+    width: 95%;
+
+    &.expanded {
+      width: 95%;
+    }
+  }
+}
+
+.note-form {
+  padding: 16px 20px;
+}
+
+.collapsed-form {
+  display: flex;
+  align-items: center;
+  cursor: text;
+  min-height: 48px;
+  padding: 2px 0;
+
+  .collapsed-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 16px;
+    color: #374151;
+    cursor: text;
+    font-weight: 400;
+
+    &::placeholder {
+      color: #9ca3af;
+      font-weight: 400;
+    }
+  }
+
+  .form-actions {
+    display: flex;
+    gap: 4px;
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+
+    button {
+      color: #6b7280;
+      transition: all 0.2s ease;
+
+      &:hover {
+        color: #4f46e5;
+        transform: scale(1.05);
+      }
+    }
+  }
+}
+
+.expanded-form {
+  .title-field,
+  .content-field {
+    width: 100%;
+
+    .mat-mdc-form-field-subscript-wrapper {
+      display: none;
+    }
+
+    .mat-mdc-text-field-wrapper {
+      background: white;
+      border-radius: 8px;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      transition: all 0.2s ease;
+
+      &:hover {
+        border-color: rgba(79, 70, 229, 0.3);
+      }
+    }
+  }
+
+  .title-field {
+    margin-bottom: 12px;
+
+    .title-input {
+      font-size: 18px;
+      font-weight: 600;
+      color: #111827;
+      padding: 8px 12px;
+
+      &::placeholder {
+        color: #9ca3af;
+        font-weight: 400;
+      }
+    }
+  }
+
+  .content-field {
+    margin-bottom: 20px;
+    width: 100%;
+
+    app-rich-text-editor {
+      width: 100%;
+      display: block;
+
+      .rich-text-editor-container {
+        .editor-content {
+          min-height: 180px;
+          padding: 20px;
+          font-size: 16px;
+        }
+      }
+    }
+  }
+}
+
+.form-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+
+  .form-actions {
+    display: flex;
+    gap: 4px;
+
+    button {
+      color: #6b7280;
+      transition: all 0.2s ease;
+
+      &:hover {
+        color: #4f46e5;
+        background: rgba(79, 70, 229, 0.1);
+      }
+    }
+  }
+
+  .submit-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+
+    button {
+      font-weight: 500;
+      padding: 8px 20px;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+      font-size: 14px;
+
+      &[color="primary"] {
+        background: #4f46e5;
+        color: white;
+        border: none;
+
+        &:hover {
+          background: #4338ca;
+          transform: translateY(-1px);
+        }
+      }
+
+      &:not([color="primary"]) {
+        color: #6b7280;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        background: transparent;
+
+        &:hover {
+          background: rgba(0, 0, 0, 0.05);
+          border-color: rgba(0, 0, 0, 0.2);
+        }
+      }
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .note-form-container {
+    max-width: 95%;
+    margin: 0 auto 20px;
+    border-radius: 16px;
+  }
+
+  .note-form {
+    padding: 16px 20px;
+  }
+
+  .collapsed-form {
+    min-height: 52px;
+
+    .collapsed-input {
+      font-size: 16px;
+    }
+  }
+
+  .expanded-form {
+    .title-field {
+      .title-input {
+        font-size: 18px;
+      }
+    }
+  }
+
+  .form-footer {
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+
+    .submit-actions {
+      justify-content: center;
+      gap: 12px;
+
+      button {
+        flex: 1;
+        max-width: 120px;
+      }
+    }
+  }
+}
