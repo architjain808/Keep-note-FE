@@ -1,6 +1,19 @@
-<mat-card class="note-card" [class.editing]="isEditing" [style.background-color]="note.color">
+<mat-card class="note-card"
+          [class.editing]="isEditing"
+          [class.show-actions]="showActions"
+          [style.background-color]="note.color"
+          (mouseenter)="onCardMouseEnter()"
+          (mouseleave)="onCardMouseLeave()">
   <!-- View Mode -->
-  <div *ngIf="!isEditing" class="note-view" (click)="startEdit()">
+  <div *ngIf="!isEditing"
+       class="note-view"
+       (click)="onCardClick()"
+       (touchstart)="onCardTouchStart()"
+       (keydown.enter)="startEdit()"
+       (keydown.space)="startEdit()"
+       tabindex="0"
+       role="button"
+       [attr.aria-label]="'Edit note: ' + (note.title || 'Untitled note')">
     <div class="note-header">
       <h3 class="note-title" *ngIf="note.title">{{ note.title }}</h3>
     </div>
@@ -20,7 +33,7 @@
         <mat-icon>palette</mat-icon>
       </button>
       <mat-menu #colorMenu="matMenu">
-        <div mat-menu-item (click)="$event.stopPropagation()">
+        <div mat-menu-item (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
           <app-color-picker
             [currentColor]="note.color"
             (colorSelected)="onColorSelected($event)"></app-color-picker>

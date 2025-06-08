@@ -8,6 +8,17 @@
     <mat-icon class="keep-icon">lightbulb_outline</mat-icon>
     <span class="app-title">{{ title }}</span>
   </div>
+
+  <!-- Real-time connection status -->
+  <div class="connection-status" *ngIf="isSocketConnected$ | async as isConnected">
+    <mat-icon
+      class="connection-icon"
+      [class.connected]="isConnected"
+      [class.disconnected]="!isConnected"
+      [matTooltip]="isConnected ? 'Real-time updates active' : 'Real-time updates disconnected'">
+      {{ isConnected ? 'wifi' : 'wifi_off' }}
+    </mat-icon>
+  </div>
 </mat-toolbar>
 
 <!-- Main Content Area -->

@@ -1,20 +1,33 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { BehaviorSubject, Observable, catchError, of, timeout, retry } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, of, timeout, retry, takeUntil, Subject } from 'rxjs';
 import { Note, ApiNote, CreateNoteRequest, UpdateNoteRequest, DeleteNoteRequest } from '../models/note.model';
 import { environment } from '../../environments/environment';
+import { SocketService } from './socket.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class NotesService {
+export class NotesService implements OnDestroy {
   private readonly API_BASE_URL = environment.apiUrl;
   private readonly notesSubject = new BehaviorSubject<Note[]>([]);
   public readonly notes$ = this.notesSubject.asObservable();
+  private readonly destroy$ = new Subject<void>();
 
-  constructor(private readonly http: HttpClient) {
+  constructor(
+    private readonly http: HttpClient,
+    private readonly socketService: SocketService
+  ) {
     // Load notes from API on initialization
     this.loadNotesFromAPI();
+    // Setup socket listeners for real-time updates
+    this.setupSocketListeners();
+
+    // Expose notes service for debugging in development
+    if (!environment.production) {
+      (window as any).notesService = this;
+      console.log('Notes service exposed as window.notesService for debugging');
+    }
   }
 
   private loadNotesFromAPI(): void {
@@ -47,8 +60,125 @@ export class NotesService {
     }));
   }
 
+  private setupSocketListeners(): void {
+    console.log('Setting up socket listeners for notesUpdate event...');
+
+    // Listen for real-time notes updates from socket (complete list)
+    // This event is sent for all operations: add, update, delete
+    this.socketService.on<ApiNote[]>('notesUpdate')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (apiNotes) => {
+          console.log('📡 Received real-time notes update:', apiNotes);
+          this.handleSocketUpdate(apiNotes, 'notesUpdate');
+        },
+        error: (error) => {
+          console.error('❌ Error in socket notes update:', error);
+          // Fallback: refresh from API on error
+          this.refreshNotesFromAPI();
+        }
+      });
+
+    // Monitor socket connection status
+    this.socketService.connectionStatus$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(isConnected => {
+        if (isConnected) {
+          console.log('✅ Socket connected, ready to receive real-time updates');
+        } else {
+          console.log('❌ Socket disconnected, real-time updates paused');
+        }
+      });
+  }
+
+
+
   getNotes(): Observable<Note[]> {
     return this.notes$;
+  }
+
+  // Method to refresh notes from API (useful for socket fallback)
+  refreshNotesFromAPI(): void {
+    console.log('Refreshing notes from API...');
+    this.loadNotesFromAPI();
+  }
+
+  // Method to handle socket updates with conflict resolution
+  private handleSocketUpdate(apiNotes: ApiNote[], source: string): void {
+    console.log(`🔄 Processing socket update from ${source}:`, {
+      receivedCount: apiNotes.length,
+      receivedNotes: apiNotes.map(n => ({ id: n.id, title: n.title }))
+    });
+
+    // Validate the received data
+    if (!Array.isArray(apiNotes)) {
+      console.error('❌ Invalid socket data: expected array of notes', apiNotes);
+      return;
+    }
+
+    // Convert API notes to local format
+    const notes = this.convertApiNotesToNotes(apiNotes);
+
+    // Get current notes
+    const currentNotes = this.notesSubject.value;
+
+    console.log(`📊 Current state: ${currentNotes.length} notes, New state: ${notes.length} notes`);
+
+    // Check if this is a meaningful update (different from current state)
+    const hasChanges = this.hasNotesChanged(currentNotes, notes);
+
+    if (hasChanges) {
+      console.log(`✅ Notes have changed, updating UI from ${source}`);
+      this.notesSubject.next(notes);
+    } else {
+      console.log(`ℹ️ No changes detected from ${source}, skipping update`);
+    }
+  }
+
+  private hasNotesChanged(currentNotes: Note[], newNotes: Note[]): boolean {
+    // Quick length check
+    if (currentNotes.length !== newNotes.length) {
+      console.log(`📏 Length changed: ${currentNotes.length} -> ${newNotes.length}`);
+      return true;
+    }
+
+    // Filter out temp notes from current notes for comparison
+    const currentRealNotes = currentNotes.filter(n => !n.id.startsWith('temp_'));
+    const newRealNotes = newNotes.filter(n => !n.id.startsWith('temp_'));
+
+    // Check if real notes count changed
+    if (currentRealNotes.length !== newRealNotes.length) {
+      console.log(`📏 Real notes count changed: ${currentRealNotes.length} -> ${newRealNotes.length}`);
+      return true;
+    }
+
+    // Check if any note content has changed
+    for (const newNote of newRealNotes) {
+      const currentNote = currentRealNotes.find(n => n.id === newNote.id);
+      if (!currentNote) {
+        console.log(`➕ New note found: ${newNote.id}`);
+        return true; // New note found
+      }
+
+      // Check if content differs
+      if (currentNote.title !== newNote.title ||
+          currentNote.content !== newNote.content ||
+          currentNote.color !== newNote.color) {
+        console.log(`✏️ Note content changed: ${newNote.id}`);
+        return true;
+      }
+    }
+
+    // Check if any notes were removed
+    for (const currentNote of currentRealNotes) {
+      const newNote = newRealNotes.find(n => n.id === currentNote.id);
+      if (!newNote) {
+        console.log(`🗑️ Note removed: ${currentNote.id}`);
+        return true;
+      }
+    }
+
+    return false;
   }
 
   addNote(note: Omit<Note, 'id' | 'createdAt' | 'updatedAt'>): void {
@@ -227,5 +357,21 @@ export class NotesService {
       // In production, log minimal error info
       console.error(message, error?.message ?? 'Unknown error');
     }
+  }
+
+  // Debug method to test socket integration
+  testSocketIntegration(): void {
+    console.log('🧪 Testing socket integration...');
+    console.log('Socket connected:', this.socketService.isConnected());
+    console.log('Current notes count:', this.notesSubject.value.length);
+
+    // Test emitting a request for notes update
+    this.socketService.emit('requestNotesUpdate', { timestamp: Date.now() });
+    console.log('Sent requestNotesUpdate event to server');
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

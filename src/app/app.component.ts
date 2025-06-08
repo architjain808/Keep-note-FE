@@ -3,23 +3,27 @@ import { Observable } from 'rxjs';
 import { Note } from './models/note.model';
 import { NotesService } from './services/notes.service';
 import { AppInitService } from './app-init.service';
+import { SocketService } from './services/socket.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
   title = 'Keep Clone';
   notes$!: Observable<Note[]>;
+  isSocketConnected$!: Observable<boolean>;
 
   constructor(
     private readonly notesService: NotesService,
-    private readonly appInitService: AppInitService
+    private readonly appInitService: AppInitService,
+    public readonly socketService: SocketService
   ) {}
 
   ngOnInit(): void {
     this.notes$ = this.notesService.getNotes();
+    this.isSocketConnected$ = this.socketService.connectionStatus$;
   }
 
   onNoteSubmit(noteData: Partial<Note>): void {
@@ -27,7 +31,7 @@ export class AppComponent implements OnInit {
       this.notesService.addNote({
         title: noteData.title ?? '',
         content: noteData.content ?? '',
-        color: noteData.color ?? '#ffffff'
+        color: noteData.color ?? '#ffffff',
       });
     }
   }
@@ -36,7 +40,7 @@ export class AppComponent implements OnInit {
     this.notesService.updateNote(note.id, {
       title: note.title,
       content: note.content,
-      color: note.color
+      color: note.color,
     });
   }
 
@@ -44,11 +48,11 @@ export class AppComponent implements OnInit {
     this.notesService.deleteNote(noteId);
   }
 
-  onColorChange(data: {id: string, color: string}): void {
+  onColorChange(data: { id: string; color: string }): void {
     this.notesService.changeNoteColor(data.id, data.color);
   }
 
-  trackByNoteId(index: number, note: Note): string {
+  trackByNoteId(_index: number, note: Note): string {
     return note.id;
   }
 }

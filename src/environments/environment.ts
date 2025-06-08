@@ -4,7 +4,8 @@
 
 export const environment = {
   production: false,
-  apiUrl: 'https://keep-clone-be.onrender.com',
+  apiUrl: 'http://localhost:3000',
+  socketUrl: 'http://localhost:3000',
   enableDebugMode: true,
-  logLevel: 'debug'
+  logLevel: 'debug',
 };

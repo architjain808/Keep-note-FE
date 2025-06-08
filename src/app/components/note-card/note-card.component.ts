@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnInit, HostBinding } from '@angular/core';
 import { Note } from '../../models/note.model';
 
 @Component({
@@ -6,7 +6,7 @@ import { Note } from '../../models/note.model';
   templateUrl: './note-card.component.html',
   styleUrls: ['./note-card.component.scss']
 })
-export class NoteCardComponent {
+export class NoteCardComponent implements OnInit {
   @Input() note!: Note;
   @Output() noteUpdate = new EventEmitter<Note>();
   @Output() noteDelete = new EventEmitter<string>();
@@ -15,6 +15,30 @@ export class NoteCardComponent {
   isEditing = false;
   editTitle = '';
   editContent = '';
+
+  // Add CSS class for touch devices
+  @HostBinding('class.touch-device') isTouchDevice = false;
+  @HostBinding('class.show-actions') showActions = false;
+
+  ngOnInit(): void {
+    // Detect if this is a touch device
+    this.isTouchDevice = this.detectTouchDevice();
+
+    // On touch devices, always show actions
+    if (this.isTouchDevice) {
+      this.showActions = true;
+    }
+  }
+
+  private detectTouchDevice(): boolean {
+    return (
+      'ontouchstart' in window ||
+      navigator.maxTouchPoints > 0 ||
+      // @ts-ignore
+      navigator.msMaxTouchPoints > 0 ||
+      window.matchMedia('(hover: none) and (pointer: coarse)').matches
+    );
+  }
 
   startEdit(): void {
     this.isEditing = true;
@@ -51,5 +75,31 @@ export class NoteCardComponent {
 
   onEditContentChange(content: string): void {
     this.editContent = content;
+  }
+
+  // Handle touch/click events for showing actions
+  onCardTouchStart(): void {
+    if (this.isTouchDevice && !this.isEditing) {
+      this.showActions = true;
+    }
+  }
+
+  onCardClick(): void {
+    if (!this.isTouchDevice && !this.isEditing) {
+      this.startEdit();
+    }
+  }
+
+  // Handle mouse events for non-touch devices
+  onCardMouseEnter(): void {
+    if (!this.isTouchDevice) {
+      this.showActions = true;
+    }
+  }
+
+  onCardMouseLeave(): void {
+    if (!this.isTouchDevice) {
+      this.showActions = false;
+    }
   }
 }
