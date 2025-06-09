@@ -49,6 +49,17 @@
   min-height: auto;
   border-radius: 12px;
   transition: all 0.2s ease;
+  cursor: pointer;
+
+  // Prevent text selection during touch interactions
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+
+  // Improve touch responsiveness
+  -webkit-tap-highlight-color: rgba(79, 70, 229, 0.1);
+  touch-action: manipulation;
 
   // Focus styles for accessibility
   &:focus {
@@ -59,6 +70,12 @@
   &:focus-visible {
     outline: 2px solid #4f46e5;
     outline-offset: 2px;
+  }
+
+  // Active state for touch feedback
+  &:active {
+    transform: scale(0.98);
+    background: rgba(79, 70, 229, 0.05);
   }
 
   // On mobile, add bottom padding to accommodate the actions

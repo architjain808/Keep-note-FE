@@ -41,6 +41,7 @@ export class NoteCardComponent implements OnInit {
   }
 
   startEdit(): void {
+    console.log('Starting edit mode for note:', this.note.id);
     this.isEditing = true;
     this.editTitle = this.note.title;
     this.editContent = this.note.content;
@@ -77,15 +78,47 @@ export class NoteCardComponent implements OnInit {
     this.editContent = content;
   }
 
-  // Handle touch/click events for showing actions
+  private touchStartTime = 0;
+  private hasTouchMoved = false;
+
+  // Handle touch events for showing actions and editing
   onCardTouchStart(): void {
+    this.touchStartTime = Date.now();
+    this.hasTouchMoved = false;
+
     if (this.isTouchDevice && !this.isEditing) {
       this.showActions = true;
     }
   }
 
+  onCardTouchMove(): void {
+    this.hasTouchMoved = true;
+  }
+
+  onCardTouchEnd(event: TouchEvent): void {
+    const touchDuration = Date.now() - this.touchStartTime;
+
+    // Only trigger edit if it was a tap (not a scroll/swipe) and duration was short
+    if (!this.hasTouchMoved && touchDuration < 500 && !this.isEditing) {
+      event.preventDefault(); // Prevent the subsequent click event
+      console.log('Touch tap detected - starting edit mode');
+      this.startEdit();
+    }
+  }
+
+  // Handle click for non-touch devices
   onCardClick(): void {
+    // Only handle click if it's not a touch device (to avoid double-firing)
     if (!this.isTouchDevice && !this.isEditing) {
+      console.log('Mouse click detected - starting edit mode');
+      this.startEdit();
+    }
+  }
+
+  // Universal edit trigger - works as fallback for any device
+  triggerEdit(): void {
+    console.log('Universal edit trigger - starting edit mode');
+    if (!this.isEditing) {
       this.startEdit();
     }
   }

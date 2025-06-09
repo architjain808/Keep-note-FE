@@ -9,19 +9,28 @@
        class="note-view"
        (click)="onCardClick()"
        (touchstart)="onCardTouchStart()"
+       (touchmove)="onCardTouchMove()"
+       (touchend)="onCardTouchEnd($event)"
        (keydown.enter)="startEdit()"
        (keydown.space)="startEdit()"
        tabindex="0"
        role="button"
        [attr.aria-label]="'Edit note: ' + (note.title || 'Untitled note')">
     <div class="note-header">
-      <h3 class="note-title" *ngIf="note.title">{{ note.title }}</h3>
+      <h3 class="note-title"
+          *ngIf="note.title"
+          (click)="triggerEdit()"
+          (keydown.enter)="triggerEdit()"
+          (keydown.space)="triggerEdit()">{{ note.title }}</h3>
     </div>
 
     <div
       class="note-content"
       *ngIf="note.content"
-      [innerHTML]="note.content">
+      [innerHTML]="note.content"
+      (click)="triggerEdit()"
+      (keydown.enter)="triggerEdit()"
+      (keydown.space)="triggerEdit()">
     </div>
 
     <div class="note-actions">
