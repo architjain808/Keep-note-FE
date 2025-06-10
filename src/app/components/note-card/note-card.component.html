@@ -7,7 +7,7 @@
   <!-- View Mode -->
   <div *ngIf="!isEditing"
        class="note-view"
-       (click)="onCardClick()"
+       (click)="onCardClick($event)"
        (touchstart)="onCardTouchStart()"
        (touchmove)="onCardTouchMove()"
        (touchend)="onCardTouchEnd($event)"
@@ -17,20 +17,13 @@
        role="button"
        [attr.aria-label]="'Edit note: ' + (note.title || 'Untitled note')">
     <div class="note-header">
-      <h3 class="note-title"
-          *ngIf="note.title"
-          (click)="triggerEdit()"
-          (keydown.enter)="triggerEdit()"
-          (keydown.space)="triggerEdit()">{{ note.title }}</h3>
+      <h3 class="note-title" *ngIf="note.title">{{ note.title }}</h3>
     </div>
 
     <div
       class="note-content"
       *ngIf="note.content"
-      [innerHTML]="note.content"
-      (click)="triggerEdit()"
-      (keydown.enter)="triggerEdit()"
-      (keydown.space)="triggerEdit()">
+      [innerHTML]="note.content">
     </div>
 
     <div class="note-actions">
@@ -38,6 +31,7 @@
         mat-icon-button
         [matMenuTriggerFor]="colorMenu"
         (click)="$event.stopPropagation()"
+        (touchend)="$event.stopPropagation()"
         matTooltip="Change color">
         <mat-icon>palette</mat-icon>
       </button>
@@ -52,6 +46,7 @@
       <button
         mat-icon-button
         (click)="$event.stopPropagation(); deleteNote()"
+        (touchend)="$event.stopPropagation()"
         matTooltip="Delete note">
         <mat-icon>delete</mat-icon>
       </button>

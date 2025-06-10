@@ -67,10 +67,12 @@ export class NoteCardComponent implements OnInit {
   }
 
   deleteNote(): void {
+    console.log('Delete button clicked for note:', this.note.id);
     this.noteDelete.emit(this.note.id);
   }
 
   onColorSelected(color: string): void {
+    console.log('Color selected for note:', this.note.id, 'Color:', color);
     this.colorChange.emit({ id: this.note.id, color });
   }
 
@@ -98,6 +100,13 @@ export class NoteCardComponent implements OnInit {
   onCardTouchEnd(event: TouchEvent): void {
     const touchDuration = Date.now() - this.touchStartTime;
 
+    // Check if the touch target is an action button or its child
+    const target = event.target as HTMLElement;
+    if (target.closest('.note-actions')) {
+      console.log('Touch on action button - not starting edit mode');
+      return; // Don't start edit mode if touching action buttons
+    }
+
     // Only trigger edit if it was a tap (not a scroll/swipe) and duration was short
     if (!this.hasTouchMoved && touchDuration < 500 && !this.isEditing) {
       event.preventDefault(); // Prevent the subsequent click event
@@ -106,19 +115,17 @@ export class NoteCardComponent implements OnInit {
     }
   }
 
-  // Handle click for non-touch devices
-  onCardClick(): void {
-    // Only handle click if it's not a touch device (to avoid double-firing)
-    if (!this.isTouchDevice && !this.isEditing) {
-      console.log('Mouse click detected - starting edit mode');
-      this.startEdit();
+  // Handle click for all devices (but avoid double-firing with touch)
+  onCardClick(event: MouseEvent): void {
+    // Check if the click target is an action button or its child
+    const target = event.target as HTMLElement;
+    if (target.closest('.note-actions')) {
+      console.log('Click on action button - not starting edit mode');
+      return; // Don't start edit mode if clicking on action buttons
     }
-  }
 
-  // Universal edit trigger - works as fallback for any device
-  triggerEdit(): void {
-    console.log('Universal edit trigger - starting edit mode');
     if (!this.isEditing) {
+      console.log('Click detected - starting edit mode');
       this.startEdit();
     }
   }

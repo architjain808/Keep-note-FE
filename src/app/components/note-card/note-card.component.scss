@@ -116,9 +116,12 @@
   gap: 4px;
   opacity: 0;
   transition: opacity 0.2s ease;
+  z-index: 10; // Ensure buttons are above other content
 
   button {
     color: #6b7280;
+    position: relative;
+    z-index: 11; // Higher z-index for buttons
 
     &:hover {
       color: #4f46e5;
